@@ -94,7 +94,7 @@ spec:
       action: fetch:template
       targetPath: ../.
       input:
-        url: https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/ {{ '${{ parameters.envelopeRepositoryName }}' }}
+        url: https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.envelopeRepositoryName }}' }}
         
     - id: append-file
       name: Append To File Or Create New
