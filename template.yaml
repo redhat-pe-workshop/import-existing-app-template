@@ -100,7 +100,7 @@ spec:
       action: fetch:template
       targetPath: ../.
       input:
-        url: https://${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.envelopeRepositoryName }}
+        url: https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/ {{ '${{ parameters.envelopeRepositoryName }}' }}
         
     - id: append-file
       name: Append To File Or Create New
@@ -114,14 +114,14 @@ spec:
       name: Open PR with envelope.yaml
       action: publish:gitlab:merge-request
       input: 
-        repoUrl: ${{ parameters.gitlabHost }}?repo=${{ parameters.envelopeRepositoryName }}&owner=${{ parameters.envelopeGitlabOrganization }}
+        repoUrl: {{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.envelopeGitlabOrganization }}' }}'
         commitMessage: Commit for component ${{ parameters.componentName }}
         title: Open PR for update to Uber catalog
         description: Open PR with catalog-info.yaml
         sourcePath: ./
         targetPath: ./
         commitAction: update
-        branchName: envelope-${{ parameters.componentName }}-update
+        branchName: envelope-{{ '${{ parameters.componentName }}' }}-update
         removeSourceBranch: true
 
 
@@ -133,16 +133,16 @@ spec:
         url: ./templates
         targetPath: ./patch
         values:
-          applicationType: ${{ parameters.componentType }}
-          component_id: ${{ parameters.componentName }}
-          componentName: ${{ parameters.componentName }}
-          componentLifecycle: ${{ parameters.componentLifecycle }}
-          description: ${{ parameters.description }}
-          destination: ${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.repositoryName }}
-          host: ${{ parameters.gitlabHost }}
-          owner: ${{ parameters.componentOwner }}
-          orgName: ${{ parameters.gitlabOrganization }}
-          repoName: ${{ parameters.repositoryName }}
+          applicationType: {{ '${{ parameters.componentType }}' }}
+          component_id: {{ '${{ parameters.componentName }}' }}
+          componentName: {{ '${{ parameters.componentName }}' }}
+          componentLifecycle: {{ '${{ parameters.componentLifecycle }}' }}
+          description: {{ '${{ parameters.description }}' }}
+          destination: {{ '${{ parameters.gitlabHost }}' }}/${{ parameters.gitlabOrganization }}' }}/${{ parameters.repositoryName }}' }}
+          host: {{ '${{ parameters.gitlabHost }}' }}
+          owner: {{ '${{ parameters.componentOwner }}' }}
+          orgName: {{ '${{ parameters.gitlabOrganization }}' }}
+          repoName: {{ '${{ parameters.repositoryName }}' }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO
@@ -150,12 +150,12 @@ spec:
       name: Open PR with for all-catalog
       action: publish:gitlab:merge-request
       input: 
-        repoUrl: ${{ parameters.gitlabHost }}?repo=${{ parameters.envelopeRepositoryName }}&owner=${{ parameters.envelopeGitlabOrganization }}
+        repoUrl: {{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.envelopeGitlabOrganization }}' }}
         title: Open PR with catalog-info.yaml
         description: Open PR with catalog-info.yaml
-        branchName: ${{ parameters.componentName }}-create
+        branchName: {{ '${{ parameters.componentName }}' }}-create
         sourcePath: ./patch
-        targetPath: ./${{ parameters.componentName }}
+        targetPath: ./{{ '${{ parameters.componentName }}' }}
         commitAction: create
         removeSourceBranch: true    
 
