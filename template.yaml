@@ -30,9 +30,6 @@ spec:
         envelopeGitlabOrganization:
           title: GitLab Organization
           type: string
-          default: {{ gitlab_destination_group }}
-            enum:
-              - {{ gitlab_destination_group }}
         envelopeRepositoryName:
           title: Repository name
           type: string
@@ -46,9 +43,6 @@ spec:
         gitlabOrganization:
           title: GitLab Organization
           type: string
-          default: {{ gitlab_destination_group }}
-            enum:
-              - {{ gitlab_destination_group }}
         repositoryName:
           title: Repository name
           type: string
