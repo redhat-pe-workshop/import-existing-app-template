@@ -14,7 +14,7 @@ spec:
   type: template
 
   parameters:
-    - title: Provide information about Uber Catalog
+    - title: Provide information about Catalog Envelope
       required:
         - gitlabHost
         - envelopeGitlabOrganization
@@ -104,13 +104,13 @@ spec:
         content: "\n    - https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.envelopeRepositoryName }}' }}/-/blob/main/{{ '${{ parameters.repositoryName }}' }}/catalog-info.yaml"
 
     # Merge envelope  into EXISTING repo  - only EXISTING REPO
-    - id: publishUberCatalogMergeRequest
+    - id: publishEnvelopeCatalogMergeRequest
       name: Open PR with envelope.yaml
       action: publish:gitlab:merge-request
       input: 
         repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.envelopeGitlabOrganization }}' }}"
         commitMessage: Commit for component {{ '${{ parameters.componentName }}' }}'
-        title: Open PR for update to Uber catalog
+        title: Open PR for update to Catalog Envelope
         description: Open PR with catalog-info.yaml
         sourcePath: ./
         targetPath: ./
@@ -160,6 +160,6 @@ spec:
     links:
       - url: {{ '${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}' }}
         title: 'Component merge request'
-      - url: {{ '${{ steps.publishUberCatalogMergeRequest.output.mergeRequestUrl }}' }}
-        title: 'Uber catalog update merge request'
+      - url: {{ '${{ steps.publishEnvelopeCatalogMergeRequest.output.mergeRequestUrl }}' }}
+        title: 'Catalog Envelope update merge request'
   
