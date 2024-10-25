@@ -101,7 +101,7 @@ spec:
       action: roadiehq:utils:fs:append
       input:
         path: ./envelope.yaml
-        content: "\n    - https://${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.envelopeRepositoryName }}/-/blob/main/${{ parameters.repositoryName }}/catalog-info.yaml"
+        content: "\n    - https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.envelopeRepositoryName }}' }}/-/blob/main/{{ '${{ parameters.repositoryName }}' }}/catalog-info.yaml"
 
     # Merge envelope  into EXISTING repo  - only EXISTING REPO
     - id: publishUberCatalogMergeRequest
@@ -109,7 +109,7 @@ spec:
       action: publish:gitlab:merge-request
       input: 
         repoUrl: {{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.envelopeGitlabOrganization }}' }}'
-        commitMessage: Commit for component ${{ parameters.componentName }}
+        commitMessage: Commit for component {{ '${{ parameters.componentName }}' }}'
         title: Open PR for update to Uber catalog
         description: Open PR with catalog-info.yaml
         sourcePath: ./
@@ -132,7 +132,7 @@ spec:
           componentName: {{ '${{ parameters.componentName }}' }}
           componentLifecycle: {{ '${{ parameters.componentLifecycle }}' }}
           description: {{ '${{ parameters.description }}' }}
-          destination: {{ '${{ parameters.gitlabHost }}' }}/${{ parameters.gitlabOrganization }}' }}/${{ parameters.repositoryName }}' }}
+          destination: {{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.repositoryName }}' }}
           host: {{ '${{ parameters.gitlabHost }}' }}
           owner: {{ '${{ parameters.componentOwner }}' }}
           orgName: {{ '${{ parameters.gitlabOrganization }}' }}
@@ -144,12 +144,12 @@ spec:
       name: Open PR with for all-catalog
       action: publish:gitlab:merge-request
       input: 
-        repoUrl: {{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.envelopeGitlabOrganization }}' }}
+        repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ user.entity.metadata.name }}' }}"
         title: Open PR with catalog-info.yaml
         description: Open PR with catalog-info.yaml
         branchName: {{ '${{ parameters.componentName }}' }}-create
         sourcePath: ./patch
-        targetPath: ./{{ '${{ parameters.componentName }}' }}
+        targetPath: {{./'${{ parameters.componentName }}' }}
         commitAction: create
         removeSourceBranch: true    
 
@@ -158,8 +158,8 @@ spec:
 
   output:
     links:
-      - url: ${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}
+      - url: {{ '${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}' }}
         title: 'Component merge request'
-      - url: ${{ steps.publishUberCatalogMergeRequest.output.mergeRequestUrl }}
+      - url: {{ '${{ steps.publishUberCatalogMergeRequest.output.mergeRequestUrl }}' }}
         title: 'Uber catalog update merge request'
   
