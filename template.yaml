@@ -144,7 +144,7 @@ spec:
       name: Open PR with for all-catalog
       action: publish:gitlab:merge-request
       input: 
-        repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ user.entity.metadata.name }}' }}"
+        repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.gitlabOrganization }}' }}"
         title: Open PR with catalog-info.yaml
         description: Open PR with catalog-info.yaml
         branchName: "{{ '${{ parameters.componentName }}' }}-create"
