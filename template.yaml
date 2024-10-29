@@ -142,6 +142,7 @@ spec:
           owner: {{ '${{ parameters.componentOwner }}' }}
           orgName: {{ '${{ parameters.gitlabOrganization }}' }}
           repoName: {{ '${{ parameters.repositoryName }}' }}
+          system: ${{ parameters.system }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO
