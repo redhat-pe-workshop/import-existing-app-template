@@ -11,7 +11,7 @@ kind: ${{ values.entityKind }}
 kind: Component
 {%- endif %}
 metadata:
-  name: ${{ name }}
+  name: ${{ componentName }}
   {%- if values.title %}
   title: ${{ values.title }}
   {%- endif %}
@@ -19,21 +19,14 @@ metadata:
   description: ${{ values.description }}
   {%- endif %}
   annotations:
-    {%- if values.hostUrl %}
-    argocd/app-name: ${{ name }}
-    {%- endif %}
-    {%- if values.ci == "../../../skeletons/tekton/" %}
-    tektonci/build-namespace: ${{ values.namespace }}
-    {%- endif %}
-    backstage.io/kubernetes-id: ${{ name }}
-    backstage.io/techdocs-ref: dir:.
-    {%- if values.sourceControl == "gitlab.com" %}
-    gitlab.com/project-slug: ${{ values.orgName }}/${{ values.repoName }}
-    {%- elif values.sourceControl == "github.com" %}
-    github.com/project-slug: ${{ values.orgName }}/${{ values.repoName }}
-    {%- elif values.sourceControl == "dev.azure.com" %}
-    dev.azure.com/project-repo: ${{ values.orgName }}/${{ values.repoName }}
-    {%- endif %}
+    argocd/app-selector: rht-gitops.com/argocd=${{ componentName }}
+    backstage.io/kubernetes-id: ${{ componentName }}
+    janus-idp.io/tekton: ${{ componentName }}
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=${{ componentName }}'
+    backstage.io/source-location: url:https://${{ host }}/parasol/${{ componentName }}
+    backstage.io/techdocs-ref: url:https://${{ host }}/parasol/envelope-parasol-catalog/-/tree/main/${{ repoName }}
+    gitlab.com/project-slug: ${{ orgName }}/${{ repoName }}
+    
 spec:
   type: ${{ values.applicationType }}
   {%- if values.system %}

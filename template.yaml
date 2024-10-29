@@ -39,6 +39,7 @@ spec:
       required:
         - gitlabOrganization
         - repositoryName
+        - system
       properties:
         gitlabOrganization:
           title: GitLab Organization
@@ -47,6 +48,10 @@ spec:
           title: Repository name
           type: string
           description: Please ensure this repo exists
+        system:
+          title: System name
+          type: string
+          description: This is the application name that helps to group components easily
 
     - title: Provide information about the new component for your existing app
       required:
