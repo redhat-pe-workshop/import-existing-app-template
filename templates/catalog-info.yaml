@@ -19,13 +19,13 @@ metadata:
   description: ${{ values.description }}
   {%- endif %}
   annotations:
-    argocd/app-selector: rht-gitops.com/argocd=${{ componentName }}
-    backstage.io/kubernetes-id: ${{ componentName }}
-    janus-idp.io/tekton: ${{ componentName }}
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=${{ componentName }}'
-    backstage.io/source-location: url:https://${{ host }}/parasol/${{ componentName }}
-    backstage.io/techdocs-ref: url:https://${{ host }}/parasol/envelope-parasol-catalog/-/tree/main/${{ repoName }}
-    gitlab.com/project-slug: ${{ orgName }}/${{ repoName }}
+    argocd/app-selector: rht-gitops.com/argocd=${{ name }}
+    backstage.io/kubernetes-id: ${{ name }}
+    janus-idp.io/tekton: ${{ name }}
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=${{ name }}'
+    backstage.io/source-location: url:https://${{ host }}/parasol/${{ values.repoName }}
+    backstage.io/techdocs-ref: url:https://${{ values.host }}/parasol/envelope-parasol-catalog/-/tree/main/${{ values.repoName }}
+    gitlab.com/project-slug: ${{ values.orgName }}/${{ values.repoName }}
     
 spec:
   type: ${{ values.applicationType }}
