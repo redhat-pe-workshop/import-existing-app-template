@@ -52,6 +52,14 @@ spec:
           title: System name
           type: string
           description: This is the application name that helps to group components easily
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: System
+        manifests:
+          title: Does this repo contain manifests?
+          type: boolean
+          description: Choose if the component needs CI/CD, Pipelines etc to be enabled on RHDH
 
     - title: Provide information about the new component for your existing app
       required:
@@ -85,6 +93,15 @@ spec:
         addTechDocs:
           title: Check to add TechDocs
           type: boolean  
+        consumesApis:
+          title: Identify the APIs consumed by this component
+          description: 'Pick one or more APIs from this multiple select option'
+          type: array
+          ui:field: MultiEntityPicker
+          ui:options:
+            catalogFilter:
+              kind:
+              - API
         componentLifecycle:
           title: Lifecycle
           type: string
@@ -143,6 +160,8 @@ spec:
           orgName: {{ '${{ parameters.gitlabOrganization }}' }}
           repoName: {{ '${{ parameters.repositoryName }}' }}
           system: {{ '${{ parameters.system }}' }}
+          manifests: {{ '${{ parameters.manifests }}' }}
+          consumesApis: {{ '${{ parameters.consumesApis }}' }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO
@@ -155,7 +174,7 @@ spec:
         description: Open PR with catalog-info.yaml
         branchName: "{{ '${{ parameters.componentName }}' }}-create"
         sourcePath: ./patch
-        targetPath: "{{ './${{ parameters.componentName }}' }}"
+        targetPath: "{{ './${{ parameters.repositoryName }}' }}"
         commitAction: create
         removeSourceBranch: true    
 

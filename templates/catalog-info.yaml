@@ -11,7 +11,7 @@ kind: ${{ values.entityKind }}
 kind: Component
 {%- endif %}
 metadata:
-  name: ${{ componentName }}
+  name: ${{ name }}
   {%- if values.title %}
   title: ${{ values.title }}
   {%- endif %}
@@ -19,14 +19,16 @@ metadata:
   description: ${{ values.description }}
   {%- endif %}
   annotations:
+    {%- if values.manifests %}  
     argocd/app-selector: rht-gitops.com/argocd=${{ name }}
     backstage.io/kubernetes-id: ${{ name }}
     janus-idp.io/tekton: ${{ name }}
     backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=${{ name }}'
-    backstage.io/source-location: url:https://${{ host }}/parasol/${{ values.repoName }}
+    {%- endif %}
+    backstage.io/source-location: url:https://${{ values.host }}/parasol/${{ values.repoName }}
     backstage.io/techdocs-ref: url:https://${{ values.host }}/parasol/envelope-parasol-catalog/-/tree/main/${{ values.repoName }}
     gitlab.com/project-slug: ${{ values.orgName }}/${{ values.repoName }}
-    
+
 spec:
   type: ${{ values.applicationType }}
   {%- if values.system %}
@@ -45,4 +47,7 @@ spec:
   {%- if values.partOf %}
   partOf:
     - ${{ values.partOf }}
+  {%- endif %}
+  {%- if values.consumesApis %}
+  consumesApis: [ ${{ values.consumesApis }} ]
   {%- endif %}
