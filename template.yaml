@@ -1,7 +1,7 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: import-existing-app-envelope-catalog
+  name: import-existing-app-template
   title: Import Existing App to Catalog Envelope
   description: Import existing application, autocreate config-info.yaml and conditionally setup techdocs.
   tags:
@@ -9,8 +9,8 @@ metadata:
     - catalog
     - register
 spec:
-  owner: parasol-authors
-  system: parasol-rhdh
+  owner: platformengineers
+  system: rhdh
   type: template
 
   parameters:
