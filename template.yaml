@@ -1,28 +1,24 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: import-api-catalog
-  title: Import Existing API
-  description: Import existing API, autocreate config-info.yaml and conditionally setup techdocs.
+  name: import-existing-app-template
+  title: Import Existing Application
+  description: Import existing application, autocreate config-info.yaml and conditionally setup techdocs.
   tags:
     - import
     - catalog
     - register
-    - api
 spec:
   owner: platformengineers
   system: rhdh
   type: template
 
   parameters:
-
-    - title: Information about your existing API
+    - title: Information about your existing application
       required:
         - gitlabHost
         - gitlabOrganization
         - repositoryName
-        - apiType
-        - apiPathText
       properties:
         gitlabHost:
           title: Gitlab hostname
@@ -32,30 +28,12 @@ spec:
           enum:
             - {{ gitlab_host }}
         gitlabOrganization:
-          title: GitLab Organization of Existing API
+          title: GitLab Organization
           type: string
         repositoryName:
-          title: Repository name of Existing API
+          title: Repository name
           type: string
           description: Please ensure this repo exists
-        apiPathText:
-          title: API specification path
-          description: This will need to be the full path where the API specification is stored in the repository. 
-          type: string
-        apiType:
-          title: Type of API
-          type: string
-          default: OpenAPI
-          description: Usual types are openapi, 
-          enum:
-          - openapi
-          - grpc
-          - graphql
-          - tRPC 
-          - Avro
-          - Dataset
-          - Other
-          allowArbitraryValues: true
 
     - title: New Component details
       required:
@@ -63,8 +41,6 @@ spec:
         - envelopeRepositoryName
         - system
         - componentOwner
-        - lifecycle
-
       properties:
         envelopeGitlabOrganization:
           title: Component GitLab Organization
@@ -74,7 +50,7 @@ spec:
           type: string
           description: Please ensure this repo exists
         componentName:
-          title: Component Name of the API
+          title: Component Name of the App
           type: string
           description: Name of the component. (Defaults to the repo name)
           default: 
@@ -87,7 +63,7 @@ spec:
             catalogFilter:
               kind: System
         componentOwner:
-          title: Owner of the API
+          title: Owner of the Application
           description: Select an owner from the list or enter a reference to a Group or a User
           type: string
           ui:field: EntityPicker
@@ -100,6 +76,32 @@ spec:
           title: A short description of this component
           description: A short description of this component
           type: string
+
+    - title: Additional Component details
+      required:
+        - lifecycle
+      properties:
+        manifests:
+          title: Does this repo contain manifests?
+          type: boolean
+          description: Choose if the component needs CI/CD, Pipelines etc to be enabled on RHDH
+        componentType:
+          title: Type
+          type: string
+          description: 'The type of component. Well-known and common values: service, website, library.'
+          default: service
+        consumesApis:
+          title: Identify the APIs consumed by this component
+          description: 'Pick one or more APIs from this multiple select option'
+          type: array
+          ui:field: MultiEntityPicker
+          ui:options:
+            catalogFilter:
+              kind:
+              - API
+        addTechDocs:
+          title: Check to add TechDocs
+          type: boolean  
         lifecycle:
           title: Lifecycle
           type: string
@@ -113,9 +115,8 @@ spec:
       targetPath: ../.
       input:
         url: https://${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.envelopeRepositoryName }}
-        
 
-    # Step1: Create catalog-info file for the component
+    # Step2: Create catalog-info file for the component
     - id: catalogTemplate
       name: Fetch catalog-info  template
       action: fetch:template
@@ -123,10 +124,10 @@ spec:
         url: ./templates
         targetPath: ./patch
         values:
-          applicationType: "API"
+          applicationType: ${{ parameters.componentType }}
           component_id: ${{ parameters.componentName }}
           componentName: ${{ parameters.componentName }}
-          componentLifecycle: ${{ parameters.componentLifecycle }}
+          lifecycle: ${{ parameters.lifecycle }}
           description: ${{ parameters.description }}
           destination: "${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.repositoryName }}"
           host: ${{ parameters.gitlabHost }}
@@ -134,8 +135,8 @@ spec:
           orgName: ${{ parameters.gitlabOrganization }}
           repoName: ${{ parameters.repositoryName }}
           system: ${{ parameters.system }}
-          apiType: ${{ parameters.apiType }}
-          apiPathText: ${{ parameters.apiPathText }}
+          manifests: ${{ parameters.manifests }}
+          consumesApis: ${{ parameters.consumesApis }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO
@@ -151,7 +152,9 @@ spec:
         targetPath: "./${{ parameters.repositoryName }}"
         commitAction: create
         removeSourceBranch: true    
+
   output:
     links:
       - url: ${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}
         title: 'Component merge request'
+  
