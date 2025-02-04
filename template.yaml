@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: import-existing-app-template
-  title: Import Existing App to Catalog Envelope
+  title: Import Existing Application
   description: Import existing application, autocreate config-info.yaml and conditionally setup techdocs.
   tags:
     - import
