@@ -1,24 +1,28 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: import-existing-app-template
-  title: Import Existing Application
-  description: Import existing application, autocreate config-info.yaml and conditionally setup techdocs.
+  name: import-api-catalog
+  title: Import Existing API
+  description: Import existing API, autocreate config-info.yaml and conditionally setup techdocs.
   tags:
     - import
     - catalog
     - register
+    - api
 spec:
   owner: platformengineers
   system: rhdh
   type: template
 
   parameters:
-    - title: Provide information about Catalog Envelope
+
+    - title: Information about your existing API
       required:
         - gitlabHost
-        - envelopeGitlabOrganization
-        - envelopeRepositoryName
+        - gitlabOrganization
+        - repositoryName
+        - apiType
+        - apiPathText
       properties:
         gitlabHost:
           title: Gitlab hostname
@@ -27,53 +31,63 @@ spec:
           default: {{ gitlab_host }}
           enum:
             - {{ gitlab_host }}
-        envelopeGitlabOrganization:
-          title: GitLab Organization
-          type: string
-        envelopeRepositoryName:
-          title: Repository name
-          type: string
-          description: Please ensure this repo exists
-
-    - title: Provide information about your existing app
-      required:
-        - gitlabOrganization
-        - repositoryName
-        - system
-      properties:
         gitlabOrganization:
-          title: GitLab Organization
+          title: GitLab Organization of Existing API
           type: string
         repositoryName:
-          title: Repository name
+          title: Repository name of Existing API
           type: string
           description: Please ensure this repo exists
+        apiPathText:
+          title: API specification path
+          description: This will need to be the full path where the API specification is stored in the repository. 
+          type: string
+        apiType:
+          title: Type of API
+          type: string
+          default: OpenAPI
+          description: Usual types are openapi, 
+          enum:
+          - openapi
+          - grpc
+          - graphql
+          - tRPC 
+          - Avro
+          - Dataset
+          - Other
+          allowArbitraryValues: true
+
+    - title: New Component details
+      required:
+        - envelopeGitlabOrganization
+        - envelopeRepositoryName
+        - system
+        - componentOwner
+        - lifecycle
+
+      properties:
+        envelopeGitlabOrganization:
+          title: Component GitLab Organization
+          type: string
+        envelopeRepositoryName:
+          title: Component Repository name
+          type: string
+          description: Please ensure this repo exists
+        componentName:
+          title: Component Name of the API
+          type: string
+          description: Name of the component. (Defaults to the repo name)
+          default: 
         system:
           title: System name
-          type: string
           description: This is the application name that helps to group components easily
+          type: string
           ui:field: EntityPicker
           ui:options:
             catalogFilter:
               kind: System
-        manifests:
-          title: Does this repo contain manifests?
-          type: boolean
-          description: Choose if the component needs CI/CD, Pipelines etc to be enabled on RHDH
-
-    - title: Provide information about the new component for your existing app
-      required:
-        - componentOwner
-        - componentType
-        - componentLifecycle
-      properties:
-        componentName:
-          title: Component Name
-          type: string
-          description: Name of the component. (Defaults to the repo name)
-          default: 
         componentOwner:
-          title: Owner
+          title: Owner of the API
           description: Select an owner from the list or enter a reference to a Group or a User
           type: string
           ui:field: EntityPicker
@@ -82,66 +96,26 @@ spec:
               kind:
                 - Group
                 - User
-        componentType:
-          title: Type
-          type: string
-          description: 'The type of component. Well-known and common values: service, website, library.'
-          default: service
         description:
           title: A short description of this component
+          description: A short description of this component
           type: string
-        addTechDocs:
-          title: Check to add TechDocs
-          type: boolean  
-        consumesApis:
-          title: Identify the APIs consumed by this component
-          description: 'Pick one or more APIs from this multiple select option'
-          type: array
-          ui:field: MultiEntityPicker
-          ui:options:
-            catalogFilter:
-              kind:
-              - API
-        componentLifecycle:
+        lifecycle:
           title: Lifecycle
           type: string
           description: 'The lifecycle state of the component. Well-known and common values: experimental, production, deprecated.'
           default: experimental
 
   steps:
-  
-
     - id: fetch-envelope=repo
       name: Fetch envelope catalog repo
       action: fetch:template
       targetPath: ../.
       input:
-        url: https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.envelopeRepositoryName }}' }}
+        url: https://${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.envelopeRepositoryName }}
         
-    - id: append-file
-      name: Append To File Or Create New
-      action: roadiehq:utils:fs:append
-      input:
-        path: ./envelope.yaml
-        content: "\n    - https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.envelopeRepositoryName }}' }}/-/blob/main/{{ '${{ parameters.repositoryName }}' }}/catalog-info.yaml"
 
-    # Merge envelope  into EXISTING repo  - only EXISTING REPO
-    - id: publishEnvelopeCatalogMergeRequest
-      name: Open PR with envelope.yaml
-      action: publish:gitlab:merge-request
-      input: 
-        repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.envelopeGitlabOrganization }}' }}"
-        commitMessage: Commit for component {{ '${{ parameters.componentName }}' }}'
-        title: Open PR for update to Catalog Envelope
-        description: Open PR with catalog-info.yaml
-        sourcePath: ./
-        targetPath: ./
-        commitAction: update
-        branchName: envelope-{{ '${{ parameters.componentName }}' }}-update
-        removeSourceBranch: true
-
-
-    # Step2: Create catalog-info file for the component
+    # Step1: Create catalog-info file for the component
     - id: catalogTemplate
       name: Fetch catalog-info  template
       action: fetch:template
@@ -149,19 +123,19 @@ spec:
         url: ./templates
         targetPath: ./patch
         values:
-          applicationType: {{ '${{ parameters.componentType }}' }}
-          component_id: {{ '${{ parameters.componentName }}' }}
-          componentName: {{ '${{ parameters.componentName }}' }}
-          componentLifecycle: {{ '${{ parameters.componentLifecycle }}' }}
-          description: {{ '${{ parameters.description }}' }}
-          destination: "{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.repositoryName }}' }}"
-          host: {{ '${{ parameters.gitlabHost }}' }}
-          owner: {{ '${{ parameters.componentOwner }}' }}
-          orgName: {{ '${{ parameters.gitlabOrganization }}' }}
-          repoName: {{ '${{ parameters.repositoryName }}' }}
-          system: {{ '${{ parameters.system }}' }}
-          manifests: {{ '${{ parameters.manifests }}' }}
-          consumesApis: {{ '${{ parameters.consumesApis }}' }}
+          applicationType: "API"
+          component_id: ${{ parameters.componentName }}
+          componentName: ${{ parameters.componentName }}
+          componentLifecycle: ${{ parameters.componentLifecycle }}
+          description: ${{ parameters.description }}
+          destination: "${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.repositoryName }}"
+          host: ${{ parameters.gitlabHost }}
+          owner: ${{ parameters.componentOwner }}
+          orgName: ${{ parameters.gitlabOrganization }}
+          repoName: ${{ parameters.repositoryName }}
+          system: ${{ parameters.system }}
+          apiType: ${{ parameters.apiType }}
+          apiPathText: ${{ parameters.apiPathText }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO
@@ -169,22 +143,15 @@ spec:
       name: Open PR with for all-catalog
       action: publish:gitlab:merge-request
       input: 
-        repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.envelopeRepositoryName }}' }}&owner={{ '${{ parameters.gitlabOrganization }}' }}"
+        repoUrl: "${{ parameters.gitlabHost }}?repo=${{ parameters.envelopeRepositoryName }}&owner=${{ parameters.gitlabOrganization }}"
         title: Open PR with catalog-info.yaml
         description: Open PR with catalog-info.yaml
-        branchName: "{{ '${{ parameters.componentName }}' }}-create"
+        branchName: "${{ parameters.componentName }}-create"
         sourcePath: ./patch
-        targetPath: "{{ './${{ parameters.repositoryName }}' }}"
+        targetPath: "./${{ parameters.repositoryName }}"
         commitAction: create
         removeSourceBranch: true    
-
-
-  
-
   output:
     links:
-      - url: {{ '${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}' }}
+      - url: ${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}
         title: 'Component merge request'
-      - url: {{ '${{ steps.publishEnvelopeCatalogMergeRequest.output.mergeRequestUrl }}' }}
-        title: 'Catalog Envelope update merge request'
-  
