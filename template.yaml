@@ -30,10 +30,12 @@ spec:
         gitlabOrganization:
           title: GitLab Organization
           type: string
+          default: parasol
         repositoryName:
           title: Repository name
           type: string
           description: Please ensure this repo exists
+          default: parasol-store
 
     - title: New Component details
       required:
@@ -45,15 +47,17 @@ spec:
         envelopeGitlabOrganization:
           title: Component GitLab Organization
           type: string
+          default: parasol
         envelopeRepositoryName:
           title: Component Repository name
           type: string
           description: Please ensure this repo exists
+          default: envelope-parasol-catalog
         componentName:
           title: Component Name of the App
           type: string
           description: Name of the component. (Defaults to the repo name)
-          default: 
+          default: parasol-store
         system:
           title: System name
           description: This is the application name that helps to group components easily
@@ -62,6 +66,7 @@ spec:
           ui:options:
             catalogFilter:
               kind: System
+          default: system:default/parasol-system
         componentOwner:
           title: Owner of the Application
           description: Select an owner from the list or enter a reference to a Group or a User
@@ -72,10 +77,12 @@ spec:
               kind:
                 - Group
                 - User
+          default: group:default/dev1
         description:
           title: A short description of this component
           description: A short description of this component
           type: string
+          default: Core services for the Parasol application
 
     - title: Additional Component details
       required:
@@ -107,6 +114,10 @@ spec:
           type: string
           description: 'The lifecycle state of the component. Well-known and common values: experimental, production, deprecated.'
           default: experimental
+          enum:
+            - experimental
+            - production
+            - deprecated
 
   steps:
     - id: fetch-envelope=repo
@@ -157,4 +168,3 @@ spec:
     links:
       - url: ${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}
         title: 'Component merge request'
-  
