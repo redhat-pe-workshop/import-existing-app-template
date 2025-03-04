@@ -148,6 +148,8 @@ spec:
           system: {{ '${{ parameters.system }}' }}
           manifests: {{ '${{ parameters.manifests }}' }}
           consumesApis: {{ '${{ parameters.consumesApis }}' }}
+          allLocationGitlabOrganization: {{ '${{ parameters.allLocationGitlabOrganization }}' }}
+          allLocationRepositoryName: {{ '${{ parameters.allLocationRepositoryName }}' }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO

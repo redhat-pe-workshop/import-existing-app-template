@@ -25,8 +25,8 @@ metadata:
     janus-idp.io/tekton: ${{ name }}
     backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=${{ name }}'
     {%- endif %}
-    backstage.io/source-location: url:https://${{ values.host }}/parasol/${{ values.repoName }}
-    backstage.io/techdocs-ref: url:https://${{ values.host }}/parasol/envelope-parasol-catalog/-/tree/main/${{ values.repoName }}
+    backstage.io/source-location: url:https://${{ values.host }}/${{ values.allLocationGitlabOrganization }}/${{ values.repoName }}
+    backstage.io/techdocs-ref: url:https://${{ values.host }}/${{ values.allLocationGitlabOrganization }}/${{ values.allLocationRepositoryName }}/-/tree/main/${{ values.repoName }}
     gitlab.com/project-slug: ${{ values.orgName }}/${{ values.repoName }}
 
 spec:
