@@ -91,6 +91,7 @@ spec:
         manifests:
           title: Does this repo contain manifests?
           type: boolean
+          default: true
           description: Choose if the component needs CI/CD, Pipelines etc to be enabled on RHDH
         componentType:
           title: Type
@@ -108,7 +109,8 @@ spec:
               - API
         addTechDocs:
           title: Check to add TechDocs
-          type: boolean  
+          type: boolean
+          default: true
         lifecycle:
           title: Lifecycle
           type: string
