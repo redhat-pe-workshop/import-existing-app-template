@@ -9,7 +9,7 @@ metadata:
     - catalog
     - register
 spec:
-  owner: platformengineers
+  owner: group:default/platformengineers
   system: rhdh
   type: template
 
@@ -77,7 +77,7 @@ spec:
               kind:
                 - Group
                 - User
-          default: group:default/dev1
+          default: user:default/dev1
         description:
           title: A short description of this component
           description: A short description of this component
