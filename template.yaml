@@ -127,7 +127,7 @@ spec:
       action: fetch:template
       targetPath: ../.
       input:
-        url: https://{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.allLocationRepositoryName }}' }}
+        url: https://${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.allLocationRepositoryName }}
 
     # Step2: Create catalog-info file for the component
     - id: catalogTemplate
@@ -137,21 +137,21 @@ spec:
         url: ./templates
         targetPath: ./patch
         values:
-          applicationType: {{ '${{ parameters.componentType }}' }}
-          component_id: {{ '${{ parameters.componentName }}' }}
-          componentName: {{ '${{ parameters.componentName }}' }}
-          lifecycle: {{ '${{ parameters.componentLifecycle }}' }}
-          description: {{ '${{ parameters.description }}' }}
-          destination: "{{ '${{ parameters.gitlabHost }}' }}/{{ '${{ parameters.gitlabOrganization }}' }}/{{ '${{ parameters.repositoryName }}' }}"
-          host: {{ '${{ parameters.gitlabHost }}' }}
-          owner: {{ '${{ parameters.componentOwner }}' }}
-          orgName: {{ '${{ parameters.gitlabOrganization }}' }}
-          repoName: {{ '${{ parameters.repositoryName }}' }}
-          system: {{ '${{ parameters.system }}' }}
-          manifests: {{ '${{ parameters.manifests }}' }}
-          consumesApis: {{ '${{ parameters.consumesApis }}' }}
-          allLocationGitlabOrganization: {{ '${{ parameters.allLocationGitlabOrganization }}' }}
-          allLocationRepositoryName: {{ '${{ parameters.allLocationRepositoryName }}' }}
+          applicationType: ${{ parameters.componentType }}
+          component_id: ${{ parameters.componentName }}
+          componentName: ${{ parameters.componentName }}
+          lifecycle: ${{ parameters.componentLifecycle }}
+          description: ${{ parameters.description }}
+          destination: "${{ parameters.gitlabHost }}/${{ parameters.gitlabOrganization }}/${{ parameters.repositoryName }}"
+          host: ${{ parameters.gitlabHost }}
+          owner: ${{ parameters.componentOwner }}
+          orgName: ${{ parameters.gitlabOrganization }}
+          repoName: ${{ parameters.repositoryName }}
+          system: ${{ parameters.system }}
+          manifests: ${{ parameters.manifests }}
+          consumesApis: ${{ parameters.consumesApis }}
+          allLocationGitlabOrganization: ${{ parameters.allLocationGitlabOrganization }}
+          allLocationRepositoryName: ${{ parameters.allLocationRepositoryName }}
 
     
     # Merge catalog-info and techdocs into EXISTING repo   - only EXISTING REPO
@@ -159,10 +159,10 @@ spec:
       name: Open PR with for all-catalog
       action: publish:gitlab:merge-request
       input: 
-        repoUrl: "{{ '${{ parameters.gitlabHost }}' }}?repo={{ '${{ parameters.allLocationRepositoryName }}' }}&owner={{ '${{ parameters.gitlabOrganization }}' }}"
+        repoUrl: "${{ parameters.gitlabHost }}?repo=${{ parameters.allLocationRepositoryName }}&owner=${{ parameters.gitlabOrganization }}"
         title: Open PR with catalog-info.yaml
         description: Open PR with catalog-info.yaml
-        branchName: "{{ '${{ parameters.componentName }}' }}-create"
+        branchName: "${{ parameters.componentName }}-create"
         sourcePath: ./patch
         targetPath: "{{ './${{ parameters.repositoryName }}' }}"
         commitAction: create
@@ -170,5 +170,5 @@ spec:
 
   output:
     links:
-      - url: {{ '${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}' }}
+      - url: ${{ steps.publishComponentMergeRequest.output.mergeRequestUrl }}
         title: 'Component merge request'
