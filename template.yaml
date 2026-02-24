@@ -164,7 +164,7 @@ spec:
         description: Open PR with catalog-info.yaml
         branchName: "${{ parameters.componentName }}-create"
         sourcePath: ./patch
-        targetPath: "{{ './${{ parameters.repositoryName }}' }}"
+        targetPath: './${{ parameters.repositoryName }}'
         commitAction: create
         removeSourceBranch: true   
 
